@@ -70,7 +70,8 @@ app.get('/relatorio', (req, res) => {
                         <th>ID</th>
                         <th>Produto</th>
                         <th>Quantidade</th>
-                        <th>Preco</th>
+                        <th>Preçoo</th>
+                        <th>Ações</th>
                     <tr>
                     ${rows.map(row => `
                         <tr>
@@ -78,11 +79,28 @@ app.get('/relatorio', (req, res) => {
                             <td>${row.produto}</td>
                             <td>${row.quantidade}</td>
                             <td>${row.preco}</td>
+                            <td><a href="/deletar/${row.id}">Deletar</a></td>
                         </tr>    
                     `).join('')}
                 </table>    
                 <a href="/">Voltar</a>
             `)
+        }
+    });
+});
+
+app.get('/deletar/:id', (req, res) => {
+    const id = req.params.id;
+    const deletar = 'DELETE FROM produtos WHERE id = ?';
+    connection.query(deletar, [id], (err, results) => {
+        if(err) {
+            console.error("Erro ao deletar produto: ", err);
+            res.status(500).send("Erro ao deletar produto");
+            return;
+        }
+        else {
+            console.log("Produto deletado com sucesso");
+            res.redirect('/relatorio');
         }
     });
 });
