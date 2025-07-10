@@ -47,8 +47,44 @@ app.post('/cadastrar', (req, res) => {
         }
         else {
             console.log("Product was insert with success!");
+            res.redirect('/');
         }
     })
+});
+
+app.get('/relatorio', (req, res) => {
+    const select = 'SELECT * FROM produtos;';
+
+    connection.query(select, (err, rows) => {
+        if(err) {
+            console.error("Erro ao listar produtos: ", err);
+            res.status(500).send('Erro ao listar produtos');
+            return;
+        }
+        else {
+            console.log("Produtos listados com sucesso");
+            res.send(`
+                <h1>Lista de Produtos</h1>
+                <table border="1">
+                    <tr>
+                        <th>ID</th>
+                        <th>Produto</th>
+                        <th>Quantidade</th>
+                        <th>Preco</th>
+                    <tr>
+                    ${rows.map(row => `
+                        <tr>
+                            <td>${row.id}</td>
+                            <td>${row.produto}</td>
+                            <td>${row.quantidade}</td>
+                            <td>${row.preco}</td>
+                        </tr>    
+                    `).join('')}
+                </table>    
+                <a href="/">Voltar</a>
+            `)
+        }
+    });
 });
 
 app.listen(3000, () => {
